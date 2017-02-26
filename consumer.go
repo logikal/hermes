@@ -13,7 +13,14 @@ import (
 	"golang.org/x/net/context"
 )
 
-func main() {
+var consume = &Command{
+	Run:       runConsume,
+	UsageLine: "consume",
+	Short:     "consume queues",
+	Long:      "'consume' continually consumes from the queue",
+}
+
+func runConsume(cmd *Command, args []string) (err error) {
 	ctx := context.Background()
 
 	// Sets your Google Cloud Platform project ID.
@@ -55,4 +62,5 @@ func main() {
 		fmt.Printf("Got message: %q\n", string(msg.Data))
 		msg.Done(true)
 	}
+	return err
 }

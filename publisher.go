@@ -1,5 +1,5 @@
 // Sample pubsub-quickstart creates a Google Cloud Pub/Sub topic.
-package publisher
+package main
 
 import (
 	"fmt"
@@ -8,12 +8,19 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/logikal/hermes/queue"
 	"github.com/yelinaung/go-haikunator"
 	"golang.org/x/net/context"
-	"github.com/logikal/hermes/queue"
 )
 
-func main() {
+var publish = &Command{
+	Run:       runPublish,
+	UsageLine: "publish",
+	Short:     "publish to queue",
+	Long:      "'publish' pushes 100 items to the queue",
+}
+
+func runPublish(cmd *Command, args []string) (err error) {
 	ctx := context.Background()
 
 	// Sets your Google Cloud Platform project ID.
@@ -23,19 +30,14 @@ func main() {
 	publishTopicName := os.Getenv("HERMES_PUBLISHER_TOPIC")
 	// consumeTopicName := os.Getenv("HERMES_CONSUMER_TOPIC")
 
-	p, err := createTopic(ctx, projectID, publishTopicName)
-	if err != nil {
-		log.Fatalf("Failed to create topic: %v", err)
-	}
-
-	// c, err := createTopic(ctx, projectID, consumeTopicName)
+	p, err := queue.CreateTopic(ctx, projectID, publishTopicName)
 	if err != nil {
 		log.Fatalf("Failed to create topic: %v", err)
 	}
 
 	haikunator := haikunator.New(time.Now().UTC().UnixNano())
 	for i := 0; i < 100; i++ {
-		msg := haikunator.Haikunate()
+		msg := fmt.Sprintf("%d: %s", time.Now().Unix(), haikunator.Haikunate())
 		msgIDs, err := p.Publish(ctx, &pubsub.Message{
 			Data: []byte(msg),
 		})
@@ -46,4 +48,5 @@ func main() {
 			fmt.Printf("Published a message; msg ID: %v\n", id)
 		}
 	}
+	return nil
 }

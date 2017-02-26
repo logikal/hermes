@@ -9,7 +9,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func createTopic(ctx context.Context, projectID string, topicName string) (*pubsub.Topic, error) {
+func CreateTopic(ctx context.Context, projectID string, topicName string) (*pubsub.Topic, error) {
 	client, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
