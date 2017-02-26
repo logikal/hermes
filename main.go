@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/yelinaung/go-haikunator"
 	"golang.org/x/net/context"
 )
 
@@ -55,8 +57,10 @@ func main() {
 		log.Fatalf("Failed to create topic: %v", err)
 	}
 
+	haikunator := haikunator.New(time.Now().UTC().UnixNano())
+	msg := haikunator.Haikunate()
 	msgIDs, err := p.Publish(ctx, &pubsub.Message{
-		Data: []byte("zomg"),
+		Data: []byte(msg),
 	})
 	if err != nil {
 		log.Fatalf("Failed to publish msg %v", err)
